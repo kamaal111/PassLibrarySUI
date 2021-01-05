@@ -35,48 +35,11 @@ public final class AddPKPassHandler: ObservableObject {
 
     public init() { }
 
-    public func openRemotePKPass(from url: URL) {
-        passLibrary.getRemotePKPass(from: url) { (result: Result<Data, Error>) in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let pkPassData: Data
-                switch result {
-                case .failure(let failure):
-                    self.lastFailures = failure
-                    return
-                case .success(let data):
-                    pkPassData = data
-                }
-                var pass: PKPass
-                do {
-                    pass = try PKPass(data: pkPassData)
-                } catch {
-                    self.lastFailures = error
-                    return
-                }
-                self.pass = pass
-            }
-        }
-    }
-
-    public func openLocalPKPass(from url: URL) {
+    public func openPKPass(from url: URL) throws {
+        let data = try Data(contentsOf: url, options: .mappedIfSafe)
+        let pkpass = try PKPass(data: data)
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let pkPassData: Data
-            do {
-                pkPassData = try Data(contentsOf: url, options: .mappedIfSafe)
-            } catch {
-                self.lastFailures = error
-                return
-            }
-            var pass: PKPass
-            do {
-                pass = try PKPass(data: pkPassData)
-            } catch {
-                self.lastFailures = error
-                return
-            }
-            self.pass = pass
+            self?.pass = pkpass
         }
     }
 }
