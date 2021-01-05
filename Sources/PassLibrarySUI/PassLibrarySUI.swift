@@ -14,8 +14,10 @@ public final class AddPKPassHandler: ObservableObject {
     @Published public var showAddPassView = false
     @Published public var pass: PKPass? {
         didSet {
-            guard pass != nil else { return }
-            showAddPassView = true
+            DispatchQueue.main.async { [weak self] in
+                guard self?.pass != nil else { return }
+                self?.showAddPassView = true
+            }
         }
     }
 
@@ -29,28 +31,30 @@ public final class AddPKPassHandler: ObservableObject {
         }
     }
 
+    private let passLibrary = PassLibrary()
+
     public init() { }
 
     public func openPKPass(from url: URL) {
-        let passLibrary = PassLibrary()
-        passLibrary.getRemotePKPass(from: url) { [weak self] (result: Result<Data, Error>) in
-            let pkPassData: Data
-            switch result {
-            case .failure(let failure):
-                self?.lastFailures = failure
-                return
-            case .success(let data):
-                pkPassData = data
-            }
-            var pass: PKPass
-            do {
-                pass = try PKPass(data: pkPassData)
-            } catch {
-                self?.lastFailures = error
-                return
-            }
+        passLibrary.getRemotePKPass(from: url) { (result: Result<Data, Error>) in
             DispatchQueue.main.async { [weak self] in
-                self?.pass = pass
+                guard let self = self else { return }
+                let pkPassData: Data
+                switch result {
+                case .failure(let failure):
+                    self.lastFailures = failure
+                    return
+                case .success(let data):
+                    pkPassData = data
+                }
+                var pass: PKPass
+                do {
+                    pass = try PKPass(data: pkPassData)
+                } catch {
+                    self.lastFailures = error
+                    return
+                }
+                self.pass = pass
             }
         }
     }
