@@ -42,10 +42,15 @@ public final class AddPKPassHandler: ObservableObject {
             case .success(let data):
                 pkPassData = data
             }
+            var pass: PKPass
             do {
-                self?.pass = try PKPass(data: pkPassData)
+                pass = try PKPass(data: pkPassData)
             } catch {
                 self?.lastFailures = error
+                return
+            }
+            DispatchQueue.main.async { [weak self] in
+                self?.pass = pass
             }
         }
     }
@@ -87,7 +92,7 @@ public struct AddPKPassView<Presenting>: View where Presenting: View {
     public var presenting: () -> Presenting
     public var passes: [PKPass]?
 
-    public init(isShowing: Binding<Bool>, presenting: @escaping () -> Presenting, passes: [PKPass]?) {
+    internal init(isShowing: Binding<Bool>, presenting: @escaping () -> Presenting, passes: [PKPass]?) {
         self._isShowing = isShowing
         self.presenting = presenting
         self.passes = passes
@@ -116,7 +121,7 @@ public extension View {
         return AddPKPassView(isShowing: isShowing, presenting: { self }, pass: pass)
     }
 
-    func addPKPassSheet(isShowing: Binding<Bool>, passess: [PKPass]?) -> some View {
+    internal func addPKPassSheet(isShowing: Binding<Bool>, passess: [PKPass]?) -> some View {
         return AddPKPassView(isShowing: isShowing, presenting: { self }, passes: passess)
     }
 }
