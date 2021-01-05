@@ -23,14 +23,22 @@ struct ContentView: View {
         VStack {
             Button(action: {
                 guard let passUrl = URL(string: "https://<PKPASS_URL>.pkpass") else { return }
-                pkPassHandler.openRemotePKPass(from: passUrl)
+                do {
+                    try pkPassHandler.openPKPass(from: passUrl)
+                } catch {
+                    // Handle error accordingly
+                }
             }) {
                 Text("Open remote pk pass")
             }
             Button(action: {
                 guard let filePath = Bundle.main.path(forResource: "<PKPASS_FILE_NAME>", ofType: "pkpass") else { return }
                 let passUrl = URL(fileURLWithPath: filePath)
-                pkPassHandler.openLocalPKPass(from: passUrl)
+                do {
+                    try pkPassHandler.openPKPass(from: passUrl)
+                } catch {
+                    // Handle error accordingly
+                }
             }) {
                 Text("Open local pk pass")
             }

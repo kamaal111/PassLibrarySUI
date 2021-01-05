@@ -13,13 +13,11 @@ let package = Package(
             name: "PassLibrarySUI",
             targets: ["PassLibrarySUI"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/kamaal111/PassLibrary.git", from: "2.1.2"),
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "PassLibrarySUI",
-            dependencies: ["PassLibrary"]),
+            dependencies: []),
         .testTarget(
             name: "PassLibrarySUITests",
             dependencies: ["PassLibrarySUI"]),
