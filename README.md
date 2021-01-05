@@ -23,7 +23,7 @@ struct ContentView: View {
         VStack {
             Button(action: {
                 guard let passUrl = URL(string: "https://<PKPASS_URL>.pkpass") else { return }
-                pkPassHandler.openLocalPKPass(from: passUrl)
+                pkPassHandler.openRemotePKPass(from: passUrl)
             }) {
                 Text("Open remote pk pass")
             }
